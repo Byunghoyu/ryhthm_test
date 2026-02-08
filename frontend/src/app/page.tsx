@@ -609,7 +609,7 @@ export default function GamePage() {
       {/* Countdown Screen */}
       {screen === 'countdown' && (
         <div className="screen active" id="countdown-screen">
-          <span className="countdown-number">{countdown}</span>
+          <span key={countdown} className="countdown-number">{countdown}</span>
         </div>
       )}
 
