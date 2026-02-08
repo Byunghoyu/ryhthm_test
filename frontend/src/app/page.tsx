@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import '@/styles/game.css';
 
 import Link from 'next/link';
-import { getParticipantCount } from '@/utils/participant';
+
 import { gameConfig } from '@/config/game-config';
 import { TRACKS, Track } from '@/data/tracks';
 
