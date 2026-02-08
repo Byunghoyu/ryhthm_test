@@ -8,12 +8,16 @@ export interface Track {
     available: boolean;
 }
 
+
+const BASE_PATH = '/ryhthm_test';
+const VERSION = 'v1.0.0';
+
 export const TRACKS: Track[] = [
     {
         id: 'track1',
         name: 'Smooth',
         difficulty: 1,
-        src: '/assets/bgm1.wav',
+        src: `${BASE_PATH}/assets/bgm1.wav?v=${VERSION}`,
         offset: -300,
         beatmap: [
             4384, 4918, 5474, 5985, 6517, 6758, 7043, 7653, 7887, 8147, 8721, 8972,
@@ -29,7 +33,7 @@ export const TRACKS: Track[] = [
         id: 'track2',
         name: 'Festival',
         difficulty: 2,
-        src: '/assets/bgm2.wav',
+        src: `${BASE_PATH}/assets/bgm2.wav?v=${VERSION}`,
         offset: 0,
         beatmap: [
             4065, 4281, 4500, 4939, 5156, 5389, 5822, 6034, 6243, 6467, 6700, 6916,

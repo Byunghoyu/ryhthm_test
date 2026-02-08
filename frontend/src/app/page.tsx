@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import '@/styles/game.css';
 
+import Link from 'next/link';
+import { getParticipantCount } from '@/utils/participant';
 import { gameConfig } from '@/config/game-config';
 import { TRACKS, Track } from '@/data/tracks';
 
@@ -737,7 +739,7 @@ export default function GamePage() {
               </button>
             </div>
 
-            <a href="/beat-creator" className="text-link">{S.resultButtons.createBeat}</a>
+            <Link href="/beat-creator" className="text-link">{S.resultButtons.createBeat}</Link>
           </div>
         </div>
       )}
