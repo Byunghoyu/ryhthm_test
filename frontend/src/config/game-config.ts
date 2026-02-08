@@ -3,6 +3,8 @@
  * 게임 텍스트, 에셋, 난이도 등 수정
  */
 
+const BASE_PATH = '/ryhthm_test';
+
 export const gameConfig = {
     version: 'v1.0.0', // 캐시 제어 및 버전 확인용
     GAME_INFO: {
@@ -141,21 +143,17 @@ export const gameConfig = {
         mySpeed: '퍼펙트 수',
     },
     ASSETS: {
-        logo: '/assets/logo.png',
-        characterIdle: '/assets/character_idle.png',
-        characterWin: '/assets/character_win.png',
-        characterFail: '/assets/character_fail.png',
-        background: '/assets/background.png',
-        beatNote: '/assets/beat_note.png',
-        soundFail: '/assets/boo.mp3',
-        soundSuccess: '/assets/cheer.mp3',
+        logo: `${BASE_PATH}/assets/logo.png`,
+        characterIdle: `${BASE_PATH}/assets/character_idle.png`,
+        characterWin: `${BASE_PATH}/assets/character_win.png`,
+        characterFail: `${BASE_PATH}/assets/character_fail.png`,
+        background: `${BASE_PATH}/assets/background.png`,
+        beatNote: `${BASE_PATH}/assets/beat_note.png`,
+        soundFail: { src: `${BASE_PATH}/assets/bgm1.wav` },
+        soundSuccess: `${BASE_PATH}/assets/cheer.mp3`,
         shaker: [
-            '/assets/shaker1.png',
-            '/assets/shaker2.png',
-            '/assets/shaker3.png',
-            '/assets/shaker4.png',
         ],
-        miss: '/assets/shaker_miss.png',
+        miss: `${BASE_PATH}/assets/shaker_miss.png`,
         ingredients: ['🥦', '🥩', '🥚', '🍌', '🥛', '🥕', '🥑', '🍗'],
     },
     DATABASE: {
@@ -166,6 +164,6 @@ export const gameConfig = {
         resultText: '🎵 [{track}]에서 {score}점 달성! 🎵\n너도 같이 쉐이크 흔들어볼래?',
         titleText: '🧉 카피바라가 단백질을 기다리고 있어!\n같이 쉐이크 만들러 가자! 🎵',
         url: '',
-        ogImage: '/assets/character_idle.png',
+        ogImage: `${BASE_PATH}/assets/character_idle.png`,
     },
 };

@@ -3,6 +3,8 @@
  * 나만의 비트를 만들어보세요!
  */
 
+const BASE_PATH = '/ryhthm_test';
+
 export const beatCreatorConfig = {
     // ============================================
     // 📝 기본 정보
@@ -22,13 +24,13 @@ export const beatCreatorConfig = {
             id: 'track1',
             name: 'Smooth',
             difficulty: 1,
-            src: '/assets/bgm1.wav'
+            src: `${BASE_PATH}/assets/bgm1.wav`
         },
         {
             id: 'track2',
             name: 'Festival',
             difficulty: 2,
-            src: '/assets/bgm2.wav'
+            src: `${BASE_PATH}/assets/bgm2.wav`
         }
     ],
 

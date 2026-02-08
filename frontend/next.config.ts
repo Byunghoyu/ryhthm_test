@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  basePath: '/ryhthm_test', // Repository name
 };
 
 export default nextConfig;
