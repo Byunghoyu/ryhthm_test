@@ -4,6 +4,7 @@
  */
 
 const BASE_PATH = '/ryhthm_test';
+const VERSION = 'v1.0.0';
 
 export const beatCreatorConfig = {
     // ============================================
@@ -24,13 +25,13 @@ export const beatCreatorConfig = {
             id: 'track1',
             name: 'Smooth',
             difficulty: 1,
-            src: `${BASE_PATH}/assets/bgm1.wav`
+            src: `${BASE_PATH}/assets/bgm1.wav?v=${VERSION}`
         },
         {
             id: 'track2',
             name: 'Festival',
             difficulty: 2,
-            src: `${BASE_PATH}/assets/bgm2.wav`
+            src: `${BASE_PATH}/assets/bgm2.wav?v=${VERSION}`
         }
     ],
 

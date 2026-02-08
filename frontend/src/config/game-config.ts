@@ -4,9 +4,10 @@
  */
 
 const BASE_PATH = '/ryhthm_test';
+const VERSION = 'v1.0.0';
 
 export const gameConfig = {
-    version: 'v1.0.0', // 캐시 제어 및 버전 확인용
+    version: VERSION, // 캐시 제어 및 버전 확인용
     GAME_INFO: {
         id: 'rhythm-game',
         name: '쉐이크를 흔들어주세요!',
@@ -143,17 +144,17 @@ export const gameConfig = {
         mySpeed: '퍼펙트 수',
     },
     ASSETS: {
-        logo: `${BASE_PATH}/assets/logo.png`,
-        characterIdle: `${BASE_PATH}/assets/character_idle.png`,
-        characterWin: `${BASE_PATH}/assets/character_win.png`,
-        characterFail: `${BASE_PATH}/assets/character_fail.png`,
-        background: `${BASE_PATH}/assets/background.png`,
-        beatNote: `${BASE_PATH}/assets/beat_note.png`,
-        soundFail: { src: `${BASE_PATH}/assets/bgm1.wav` },
-        soundSuccess: `${BASE_PATH}/assets/cheer.mp3`,
+        logo: `${BASE_PATH}/assets/logo.png?v=${VERSION}`,
+        characterIdle: `${BASE_PATH}/assets/character_idle.png?v=${VERSION}`,
+        characterWin: `${BASE_PATH}/assets/character_win.png?v=${VERSION}`,
+        characterFail: `${BASE_PATH}/assets/character_fail.png?v=${VERSION}`,
+        background: `${BASE_PATH}/assets/background.png?v=${VERSION}`,
+        beatNote: `${BASE_PATH}/assets/beat_note.png?v=${VERSION}`,
+        soundFail: `${BASE_PATH}/assets/boo.mp3?v=${VERSION}`,
+        soundSuccess: `${BASE_PATH}/assets/cheer.mp3?v=${VERSION}`,
         shaker: [
         ],
-        miss: `${BASE_PATH}/assets/shaker_miss.png`,
+        miss: `${BASE_PATH}/assets/shaker_miss.png?v=${VERSION}`,
         ingredients: ['🥦', '🥩', '🥚', '🍌', '🥛', '🥕', '🥑', '🍗'],
     },
     DATABASE: {
@@ -163,7 +164,7 @@ export const gameConfig = {
     SHARE: {
         resultText: '🎵 [{track}]에서 {score}점 달성! 🎵\n너도 같이 쉐이크 흔들어볼래?',
         titleText: '🧉 카피바라가 단백질을 기다리고 있어!\n같이 쉐이크 만들러 가자! 🎵',
-        url: '',
-        ogImage: `${BASE_PATH}/assets/character_idle.png`,
+        url: 'https://byunghoyu.github.io/ryhthm_test/',
+        ogImage: `${BASE_PATH}/assets/character_idle.png?v=${VERSION}`,
     },
 };
