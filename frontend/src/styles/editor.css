@@ -1,0 +1,352 @@
+/* Editor Common Styles */
+
+.editor-container {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 20px;
+    padding-bottom: 80px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+}
+
+.editor-container h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.editor-container p {
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+.editor-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.editor-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.editor-section h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Music Grid */
+.music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.music-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.music-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.music-card.selected {
+    border-color: #FFD700;
+    background: rgba(255, 215, 0, 0.2);
+}
+
+.music-card .icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.music-card .name {
+    font-size: 14px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.music-card .stars {
+    color: #FFD700;
+    font-size: 12px;
+}
+
+.music-card .check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #FFD700;
+    color: #000;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Time Display */
+.time-display {
+    font-size: 48px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 15px;
+    font-family: monospace;
+}
+
+/* Tap Area */
+.tap-area {
+    background: linear-gradient(135deg, #FFD700 0%, #FF6B35 100%);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.1s;
+    margin-bottom: 15px;
+}
+
+.tap-area:active {
+    transform: scale(0.97);
+}
+
+.tap-area.disabled {
+    background: linear-gradient(135deg, #444 0%, #333 100%);
+    cursor: not-allowed;
+}
+
+.tap-area .tap-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.tap-area .tap-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.tap-area.disabled .tap-text {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.controls .btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-play {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-stop {
+    background: #FF6B6B;
+    color: white;
+}
+
+.btn:disabled {
+    background: #444;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Stats */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #FFD700;
+    display: block;
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Beat Preview */
+.beat-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 15px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.beat-dot {
+    width: 30px;
+    height: 30px;
+    background: #FFD700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Beatmap Output */
+.beatmap-output {
+    background: #000;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    color: #4CAF50;
+    word-break: break-all;
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.copy-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3A8DDE 0%, #2A6CB8 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.copy-btn:disabled {
+    background: #444;
+    cursor: not-allowed;
+}
+
+/* Submit Instructions */
+.submit-instructions {
+    text-align: center;
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+/* Floating Back Button */
+.floating-back-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 100;
+}
+
+.floating-back-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* File Upload */
+.file-upload {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.file-upload input {
+    width: 100%;
+}
+
+.file-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #7AB8F5;
+}
+
+/* Trim Controls */
+.trim-container {
+    margin: 15px 0;
+}
+
+.trim-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.trim-label {
+    width: 80px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.trim-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    outline: none;
+}
+
+.trim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+}

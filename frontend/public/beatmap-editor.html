@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 비트맵 레코딩 도구</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #7AB8F5;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 80px;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-play {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-stop {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #888;
+            color: white;
+        }
+
+        .btn-copy {
+            background: #3A8DDE;
+            color: white;
+        }
+
+        .btn-preview {
+            background: #9C27B0;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 트림 슬라이더 */
+        .trim-container {
+            margin: 15px 0;
+        }
+
+        .trim-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .trim-label {
+            width: 80px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .trim-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .trim-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #FFD700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .trim-value {
+            width: 70px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: #FFD700;
+        }
+
+        .trim-info {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .trim-info strong {
+            color: #FFD700;
+        }
+
+        /* 웨이브폼 영역 */
+        .waveform-container {
+            position: relative;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .waveform-bar {
+            position: absolute;
+            bottom: 0;
+            width: 2px;
+            background: #7AB8F5;
+            opacity: 0.8;
+        }
+
+        .trim-overlay {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+        }
+
+        .trim-overlay.left {
+            left: 0;
+        }
+
+        .trim-overlay.right {
+            right: 0;
+        }
+
+        .playhead {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #FF6B35;
+            display: none;
+        }
+
+        #tap-area {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #FFD700 0%, #FF6B35 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s;
+            margin-top: 15px;
+        }
+
+        #tap-area:active {
+            transform: scale(0.98);
+            background: linear-gradient(135deg, #FF6B35 0%, #FFD700 100%);
+        }
+
+        #tap-area.disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #FFD700;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #output {
+            width: 100%;
+            height: 150px;
+            background: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            color: #4CAF50;
+            font-family: monospace;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .time-display {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            margin: 20px 0;
+        }
+
+        .instructions {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .beat-preview {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .beat-dot {
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎵 비트맵 레코딩 도구</h1>
+
+        <div class="section instructions">
+            <strong>사용법:</strong><br>
+            1️⃣ 음악 파일 선택<br>
+            2️⃣ 시작/끝 지점 설정 (원하는 구간만 자르기)<br>
+            3️⃣ 재생 버튼 클릭 → 음악에 맞춰 터치<br>
+            4️⃣ 비트맵 복사 → config.js에 붙여넣기
+        </div>
+
+        <div class="section">
+            <h2>📁 Step 1: 음악 파일 선택</h2>
+            <input type="file" id="audio-file" accept="audio/*">
+
+            <div id="audio-info" style="display: none; margin-top: 15px;">
+                <div class="waveform-container" id="waveform">
+                    <div class="trim-overlay left" id="trim-left"></div>
+                    <div class="trim-overlay right" id="trim-right"></div>
+                    <div class="playhead" id="playhead"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="trim-section" style="display: none;">
+            <h2>✂️ Step 2: 구간 설정</h2>
+
+            <div class="trim-container">
+                <div class="trim-row">
+                    <span class="trim-label">시작 지점</span>
+                    <input type="range" class="trim-slider" id="start-slider" value="0" min="0" step="0.1">
+                    <input type="number" class="trim-input" id="start-input" value="0" min="0" step="0.1"
+                        style="width: 70px; padding: 5px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; text-align: center;">
+                    <span style="margin-left: 5px;">초</span>
+                </div>
+
+                <div class="trim-row">
+                    <span class="trim-label">끝 지점</span>
+                    <input type="range" class="trim-slider" id="end-slider" value="30" min="0" step="0.1">
+                    <input type="number" class="trim-input" id="end-input" value="30" min="0" step="0.1"
+                        style="width: 70px; padding: 5px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; text-align: center;">
+                    <span style="margin-left: 5px;">초</span>
+                </div>
+            </div>
+
+            <div class="trim-info">
+                선택된 구간: <strong id="duration-display">30.0초</strong>
+            </div>
+
+            <h2 style="margin-top: 20px;">🎚️ 페이드 효과</h2>
+            <div class="trim-container">
+                <div class="trim-row">
+                    <span class="trim-label">페이드 인</span>
+                    <input type="range" class="trim-slider fade-slider" id="fadein-slider" value="0" min="0" max="5"
+                        step="0.5">
+                    <span class="trim-value" id="fadein-value">0.0초</span>
+                </div>
+
+                <div class="trim-row">
+                    <span class="trim-label">페이드 아웃</span>
+                    <input type="range" class="trim-slider fade-slider" id="fadeout-slider" value="0" min="0" max="5"
+                        step="0.5">
+                    <span class="trim-value" id="fadeout-value">0.0초</span>
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 15px;">
+                <button class="btn-preview" id="preview-btn">🔊 미리듣기</button>
+                <button class="btn-stop" id="preview-stop-btn">⏹️ 정지</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎮 Step 3: 레코딩</h2>
+            <div class="controls">
+                <button class="btn-play" id="play-btn" disabled>▶️ 재생 & 녹음</button>
+                <button class="btn-stop" id="stop-btn" disabled>⏹️ 정지</button>
+                <button class="btn-reset" id="reset-btn">🔄 초기화</button>
+            </div>
+
+            <div class="time-display" id="time-display">00:00.00</div>
+
+            <div id="tap-area" class="disabled">
+                🎵 음악 재생 후 여기를 탭!
+            </div>
+
+            <div class="stats">
+                <div>
+                    <div class="stat-value" id="beat-count">0</div>
+                    <div class="stat-label">비트 수</div>
+                </div>
+                <div>
+                    <div class="stat-value" id="last-beat">-</div>
+                    <div class="stat-label">마지막 비트 (ms)</div>
+                </div>
+            </div>
+
+            <div class="beat-preview" id="beat-preview"></div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Step 4: 비트맵 복사</h2>
+            <textarea id="output" readonly placeholder="여기에 비트맵 배열이 표시됩니다..."></textarea>
+            <div class="controls" style="margin-top: 10px;">
+                <button class="btn-copy" id="copy-btn">📋 클립보드에 복사</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💾 Step 5: 편집된 음원 다운로드</h2>
+            <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 15px;">
+                설정한 구간 + 페이드 효과가 적용된 음원을 다운로드합니다.
+            </p>
+            <div class="controls">
+                <button class="btn-play" id="export-btn" disabled>💾 WAV 다운로드</button>
+            </div>
+            <p id="export-status" style="font-size: 12px; color: #FFD700; margin-top: 10px; text-align: center;"></p>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let audio = null;
+        let audioContext = null;
+        let isPlaying = false;
+        let startTime = 0;
+        let beatmap = [];
+        let timerInterval = null;
+        let audioDuration = 0;
+
+        // Trim settings
+        let trimStart = 0;
+        let trimEnd = 30;
+
+        // Fade settings
+        let fadeIn = 0;
+        let fadeOut = 0;
+
+        // Elements
+        const audioFile = document.getElementById('audio-file');
+        const audioInfo = document.getElementById('audio-info');
+        const trimSection = document.getElementById('trim-section');
+        const startSlider = document.getElementById('start-slider');
+        const endSlider = document.getElementById('end-slider');
+        const startValue = document.getElementById('start-value');
+        const endValue = document.getElementById('end-value');
+        const durationDisplay = document.getElementById('duration-display');
+        const fadeinSlider = document.getElementById('fadein-slider');
+        const fadeoutSlider = document.getElementById('fadeout-slider');
+        const fadeinValue = document.getElementById('fadein-value');
+        const fadeoutValue = document.getElementById('fadeout-value');
+        const previewBtn = document.getElementById('preview-btn');
+        const playBtn = document.getElementById('play-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const tapArea = document.getElementById('tap-area');
+        const timeDisplay = document.getElementById('time-display');
+        const beatCount = document.getElementById('beat-count');
+        const lastBeat = document.getElementById('last-beat');
+        const beatPreview = document.getElementById('beat-preview');
+        const output = document.getElementById('output');
+        const waveform = document.getElementById('waveform');
+        const playhead = document.getElementById('playhead');
+        const trimLeft = document.getElementById('trim-left');
+        const trimRight = document.getElementById('trim-right');
+
+        // Fade slider events
+        fadeinSlider.addEventListener('input', () => {
+            fadeIn = parseFloat(fadeinSlider.value);
+            fadeinValue.textContent = `${fadeIn.toFixed(1)}초`;
+        });
+
+        fadeoutSlider.addEventListener('input', () => {
+            fadeOut = parseFloat(fadeoutSlider.value);
+            fadeoutValue.textContent = `${fadeOut.toFixed(1)}초`;
+        });
+
+        // Audio buffer for export
+        let audioBuffer = null;
+        const exportBtn = document.getElementById('export-btn');
+        const exportStatus = document.getElementById('export-status');
+
+        // Load audio file
+        audioFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (audio) {
+                audio.pause();
+                audio = null;
+            }
+
+            const fileUrl = URL.createObjectURL(file);
+            audio = new Audio(fileUrl);
+
+            // 이벤트 리스너 먼저 등록
+            audio.addEventListener('loadedmetadata', () => {
+                audioDuration = audio.duration;
+
+                // Setup trim sliders
+                startSlider.max = audioDuration;
+                endSlider.max = audioDuration;
+                endSlider.value = Math.min(30, audioDuration);
+                trimEnd = parseFloat(endSlider.value);
+
+                // 입력 필드 max 값 및 초기값 설정
+                document.getElementById('start-input').max = audioDuration;
+                document.getElementById('end-input').max = audioDuration;
+                document.getElementById('start-input').value = '0.0';
+                document.getElementById('end-input').value = trimEnd.toFixed(1);
+
+                updateTrimDisplay();
+
+                audioInfo.style.display = 'block';
+                trimSection.style.display = 'block';
+                playBtn.disabled = false;
+                tapArea.textContent = '🎵 재생 버튼을 눌러 시작하세요!';
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                if (isPlaying && audio.currentTime >= trimEnd) {
+                    stopRecording();
+                }
+                updatePlayhead();
+            });
+
+            // 오디오 버퍼 로드 (파형 및 export용)
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                exportBtn.disabled = false;
+                drawWaveform();
+            } catch (err) {
+                console.log('Audio buffer error:', err);
+            }
+        });
+
+        // Draw simple waveform visualization
+        async function drawWaveform() {
+            try {
+                if (!audioBuffer) return;
+
+                const channelData = audioBuffer.getChannelData(0);
+                const samples = 100;
+                const blockSize = Math.floor(channelData.length / samples);
+
+                waveform.innerHTML = '';
+                waveform.appendChild(trimLeft);
+                waveform.appendChild(trimRight);
+                waveform.appendChild(playhead);
+
+                for (let i = 0; i < samples; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < blockSize; j++) {
+                        sum += Math.abs(channelData[i * blockSize + j]);
+                    }
+                    const avg = sum / blockSize;
+                    const height = Math.max(5, avg * 150);
+
+                    const bar = document.createElement('div');
+                    bar.className = 'waveform-bar';
+                    bar.style.left = `${(i / samples) * 100}%`;
+                    bar.style.height = `${height}px`;
+                    waveform.appendChild(bar);
+                }
+
+                updateTrimOverlays();
+            } catch (err) {
+                console.log('Waveform error:', err);
+            }
+        }
+
+        // Trim slider and input events
+        const startInput = document.getElementById('start-input');
+        const endInput = document.getElementById('end-input');
+
+        startSlider.addEventListener('input', () => {
+            trimStart = parseFloat(startSlider.value);
+            if (trimStart >= trimEnd - 1) {
+                trimStart = trimEnd - 1;
+                startSlider.value = trimStart;
+            }
+            startInput.value = trimStart.toFixed(1);
+            updateTrimDisplay();
+            updateTrimOverlays();
+        });
+
+        endSlider.addEventListener('input', () => {
+            trimEnd = parseFloat(endSlider.value);
+            if (trimEnd <= trimStart + 1) {
+                trimEnd = trimStart + 1;
+                endSlider.value = trimEnd;
+            }
+            endInput.value = trimEnd.toFixed(1);
+            updateTrimDisplay();
+            updateTrimOverlays();
+        });
+
+        // 숫자 입력 필드 이벤트
+        startInput.addEventListener('change', () => {
+            let val = parseFloat(startInput.value) || 0;
+            val = Math.max(0, Math.min(val, audioDuration - 1));
+            if (val >= trimEnd - 1) val = trimEnd - 1;
+            trimStart = val;
+            startSlider.value = val;
+            startInput.value = val.toFixed(1);
+            updateTrimDisplay();
+            updateTrimOverlays();
+        });
+
+        endInput.addEventListener('change', () => {
+            let val = parseFloat(endInput.value) || 0;
+            val = Math.max(1, Math.min(val, audioDuration));
+            if (val <= trimStart + 1) val = trimStart + 1;
+            trimEnd = val;
+            endSlider.value = val;
+            endInput.value = val.toFixed(1);
+            updateTrimDisplay();
+            updateTrimOverlays();
+        });
+
+        function updateTrimDisplay() {
+            durationDisplay.textContent = `${(trimEnd - trimStart).toFixed(1)}초`;
+        }
+
+        function updateTrimOverlays() {
+            const leftPercent = (trimStart / audioDuration) * 100;
+            const rightPercent = ((audioDuration - trimEnd) / audioDuration) * 100;
+            trimLeft.style.width = `${leftPercent}%`;
+            trimRight.style.width = `${rightPercent}%`;
+        }
+
+        function updatePlayhead() {
+            if (!audio || audioDuration === 0) return;
+            const percent = (audio.currentTime / audioDuration) * 100;
+            playhead.style.left = `${percent}%`;
+        }
+
+        // Preview trimmed section
+        const previewStopBtn = document.getElementById('preview-stop-btn');
+        let previewTimeout = null;
+        let fadeInterval = null;
+        let isPreviewing = false;
+
+        // 실시간 페이드 효과 적용
+        function applyFadeEffect() {
+            if (!audio) return;
+
+            const currentTime = audio.currentTime;
+            const elapsedInTrim = currentTime - trimStart;
+            const timeUntilEnd = trimEnd - currentTime;
+
+            let volume = 1;
+
+            // Fade in
+            if (fadeIn > 0 && elapsedInTrim >= 0 && elapsedInTrim < fadeIn) {
+                volume = elapsedInTrim / fadeIn;
+            }
+
+            // Fade out
+            if (fadeOut > 0 && timeUntilEnd >= 0 && timeUntilEnd < fadeOut) {
+                volume = Math.min(volume, timeUntilEnd / fadeOut);
+            }
+
+            audio.volume = Math.max(0, Math.min(1, volume));
+        }
+
+        function startFadeInterval() {
+            if (fadeInterval) clearInterval(fadeInterval);
+            fadeInterval = setInterval(applyFadeEffect, 50);
+        }
+
+        function stopFadeInterval() {
+            if (fadeInterval) {
+                clearInterval(fadeInterval);
+                fadeInterval = null;
+            }
+            if (audio) audio.volume = 1;
+        }
+
+        previewBtn.addEventListener('click', () => {
+            if (!audio) return;
+            isPreviewing = true;
+            audio.currentTime = trimStart;
+            audio.volume = fadeIn > 0 ? 0 : 1;
+            audio.play();
+            startFadeInterval();
+
+            previewTimeout = setTimeout(() => {
+                audio.pause();
+                stopFadeInterval();
+                isPreviewing = false;
+            }, (trimEnd - trimStart) * 1000);
+        });
+
+        previewStopBtn.addEventListener('click', () => {
+            if (!audio) return;
+            audio.pause();
+            stopFadeInterval();
+            isPreviewing = false;
+            if (previewTimeout) {
+                clearTimeout(previewTimeout);
+                previewTimeout = null;
+            }
+        });
+
+        // Play & Record
+        playBtn.addEventListener('click', () => {
+            if (!audio) return;
+
+            audio.currentTime = trimStart;
+            audio.volume = fadeIn > 0 ? 0 : 1;
+            audio.play();
+            startFadeInterval();
+            startTime = Date.now();
+            isPlaying = true;
+
+            playBtn.disabled = true;
+            stopBtn.disabled = false;
+            tapArea.classList.remove('disabled');
+            tapArea.textContent = '👆 여기를 터치!';
+            playhead.style.display = 'block';
+
+            timerInterval = setInterval(updateTimer, 10);
+        });
+
+        // Stop
+        stopBtn.addEventListener('click', stopRecording);
+
+        function stopRecording() {
+            if (audio) {
+                audio.pause();
+            }
+            stopFadeInterval();
+
+            isPlaying = false;
+            playBtn.disabled = false;
+            stopBtn.disabled = true;
+            tapArea.classList.add('disabled');
+            tapArea.textContent = '▶️ 다시 재생하려면 재생 버튼 클릭';
+            playhead.style.display = 'none';
+
+            clearInterval(timerInterval);
+            updateOutput();
+        }
+
+        // Reset
+        resetBtn.addEventListener('click', () => {
+            beatmap = [];
+            updateStats();
+            updateOutput();
+            beatPreview.innerHTML = '';
+            timeDisplay.textContent = '00:00.00';
+        });
+
+        // Tap
+        function handleTap(e) {
+            e.preventDefault();
+            if (!isPlaying) return;
+
+            const time = Date.now() - startTime;
+            beatmap.push(time);
+
+            tapArea.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                tapArea.style.transform = 'scale(1)';
+            }, 50);
+
+            if (navigator.vibrate) navigator.vibrate(30);
+
+            updateStats();
+            addBeatDot(time);
+        }
+
+        tapArea.addEventListener('click', handleTap);
+        tapArea.addEventListener('touchstart', handleTap, { passive: false });
+
+        function updateTimer() {
+            if (!isPlaying) return;
+            const elapsed = Date.now() - startTime;
+            const seconds = Math.floor(elapsed / 1000);
+            const centis = Math.floor((elapsed % 1000) / 10);
+            timeDisplay.textContent = `${String(seconds).padStart(2, '0')}:${String(centis).padStart(2, '0')}`;
+        }
+
+        function updateStats() {
+            beatCount.textContent = beatmap.length;
+            lastBeat.textContent = beatmap.length > 0 ? beatmap[beatmap.length - 1] : '-';
+        }
+
+        function addBeatDot(time) {
+            const dot = document.createElement('div');
+            dot.className = 'beat-dot';
+            dot.textContent = beatmap.length;
+            dot.title = `${time}ms`;
+            beatPreview.appendChild(dot);
+            beatPreview.scrollTop = beatPreview.scrollHeight;
+        }
+
+        function updateOutput() {
+            if (beatmap.length === 0) {
+                output.value = '// 아직 비트가 없습니다. 음악에 맞춰 탭하세요!';
+                return;
+            }
+
+            const trimDuration = Math.round((trimEnd - trimStart) * 1000);
+            const fadeInMs = Math.round(fadeIn * 1000);
+            const fadeOutMs = Math.round(fadeOut * 1000);
+
+            let formatted = `// 음악 길이: ${(trimEnd - trimStart).toFixed(1)}초\n`;
+            formatted += `// 시작: ${trimStart.toFixed(1)}초, 끝: ${trimEnd.toFixed(1)}초\n`;
+            if (fadeIn > 0 || fadeOut > 0) {
+                formatted += `// 페이드 인: ${fadeIn.toFixed(1)}초, 페이드 아웃: ${fadeOut.toFixed(1)}초\n`;
+            }
+            formatted += `\nBEATMAP: [\n  ${beatmap.join(', ')}\n],\n\n`;
+            formatted += `MUSIC: {\n  src: './assets/bgm.mp3',\n  duration: ${trimDuration},\n  startOffset: ${Math.round(trimStart * 1000)},`;
+            if (fadeIn > 0) formatted += `\n  fadeIn: ${fadeInMs},`;
+            if (fadeOut > 0) formatted += `\n  fadeOut: ${fadeOutMs},`;
+            formatted += `\n}`;
+
+            output.value = formatted;
+        }
+
+        // Copy
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(output.value);
+                copyBtn.textContent = '✅ 복사됨!';
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 클립보드에 복사';
+                }, 2000);
+            } catch (err) {
+                output.select();
+                document.execCommand('copy');
+                copyBtn.textContent = '✅ 복사됨!';
+            }
+        });
+
+        // Export audio with trim and fade
+        exportBtn.addEventListener('click', async () => {
+            if (!audioBuffer) {
+                exportStatus.textContent = '⚠️ 먼저 음악 파일을 선택하세요';
+                return;
+            }
+
+            exportStatus.textContent = '⏳ 처리 중...';
+            exportBtn.disabled = true;
+
+            try {
+                // Calculate sample positions
+                const sampleRate = audioBuffer.sampleRate;
+                const startSample = Math.floor(trimStart * sampleRate);
+                const endSample = Math.floor(trimEnd * sampleRate);
+                const numSamples = endSample - startSample;
+                const numChannels = audioBuffer.numberOfChannels;
+
+                // Create new offline context for processing
+                const offlineCtx = new OfflineAudioContext(numChannels, numSamples, sampleRate);
+
+                // Create new buffer for trimmed audio
+                const trimmedBuffer = offlineCtx.createBuffer(numChannels, numSamples, sampleRate);
+
+                // Copy trimmed data with fade
+                for (let channel = 0; channel < numChannels; channel++) {
+                    const sourceData = audioBuffer.getChannelData(channel);
+                    const destData = trimmedBuffer.getChannelData(channel);
+
+                    const fadeInSamples = Math.floor(fadeIn * sampleRate);
+                    const fadeOutSamples = Math.floor(fadeOut * sampleRate);
+
+                    for (let i = 0; i < numSamples; i++) {
+                        let sample = sourceData[startSample + i];
+
+                        // Apply fade in
+                        if (fadeInSamples > 0 && i < fadeInSamples) {
+                            sample *= i / fadeInSamples;
+                        }
+
+                        // Apply fade out
+                        if (fadeOutSamples > 0 && i >= numSamples - fadeOutSamples) {
+                            sample *= (numSamples - i) / fadeOutSamples;
+                        }
+
+                        destData[i] = sample;
+                    }
+                }
+
+                // Convert to WAV
+                const wavBlob = audioBufferToWav(trimmedBuffer);
+
+                // Download
+                const url = URL.createObjectURL(wavBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'bgm.wav';
+                a.click();
+                URL.revokeObjectURL(url);
+
+                exportStatus.textContent = '✅ 다운로드 완료! rhythm-game/assets 폴더에 저장하세요';
+                exportBtn.disabled = false;
+
+            } catch (err) {
+                console.error('Export error:', err);
+                exportStatus.textContent = '❌ 오류: ' + err.message;
+                exportBtn.disabled = false;
+            }
+        });
+
+        // Convert AudioBuffer to WAV Blob
+        function audioBufferToWav(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const format = 1; // PCM
+            const bitDepth = 16;
+
+            const bytesPerSample = bitDepth / 8;
+            const blockAlign = numChannels * bytesPerSample;
+            const numSamples = buffer.length;
+            const dataSize = numSamples * blockAlign;
+            const bufferSize = 44 + dataSize;
+
+            const arrayBuffer = new ArrayBuffer(bufferSize);
+            const view = new DataView(arrayBuffer);
+
+            // WAV header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, bufferSize - 8, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); // fmt chunk size
+            view.setUint16(20, format, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * blockAlign, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitDepth, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            // Audio data
+            const channels = [];
+            for (let i = 0; i < numChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            let offset = 44;
+            for (let i = 0; i < numSamples; i++) {
+                for (let ch = 0; ch < numChannels; ch++) {
+                    const sample = Math.max(-1, Math.min(1, channels[ch][i]));
+                    const value = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    view.setInt16(offset, value, true);
+                    offset += 2;
+                }
+            }
+
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+/**
+ * Global CSS - Design System Variables
+ * 프로젝트 전역 스타일 변수
+ */
+
+:root {
+  /* 배경 그라데이션 */
+  --bg-main: #E8F4FC;
+  --bg-sub: #F5FAFF;
+
+  /* 텍스트 */
+  --text-primary: #1A3A5C;
+  --text-secondary: #6B8FAD;
+
+  /* 포인트 컬러 */
+  --accent-color: #3A8DDE;
+  --accent-light: #7AB8F5;
+  --accent-dark: #2A6CB8;
+
+  /* 3D 오브젝트 */
+  --object-base: #A7D3F3;
+  --object-light: #D4EDFF;
+
+  /* 그림자 */
+  --shadow-soft: rgba(58, 141, 222, 0.15);
+  --shadow-medium: rgba(58, 141, 222, 0.25);
+  --shadow-strong: rgba(26, 58, 92, 0.2);
+
+  /* 성공/실패 */
+  --success-color: #4CAF50;
+  --fail-color: #FF6B6B;
+
+  /* 리듬게임 전용 */
+  --perfect-color: #FFD700;
+  --great-color: #FF6B35;
+  --good-color: #4CAF50;
+  --miss-color: #888;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: linear-gradient(180deg, var(--bg-main) 0%, var(--bg-sub) 100%);
+  color: var(--text-primary);
+}
