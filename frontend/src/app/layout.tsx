@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "쉐이크를 흔들어주세요!",
     description: "카피바라는 단백질이 필요해!",
-    images: ["/assets/character_idle.png"],
+    images: ["/ryhthm_test/assets/character_idle.png"],
   },
 };
 
