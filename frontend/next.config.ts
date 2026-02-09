@@ -1,11 +1,13 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig: NextConfig = {
-  output: 'export',
+  output: isProd ? 'export' : undefined,
   images: {
     unoptimized: true,
   },
-  basePath: '/ryhthm_test', // Repository name
+  basePath: isProd ? '/ryhthm_test' : undefined, // Repository name
 };
 
 export default nextConfig;

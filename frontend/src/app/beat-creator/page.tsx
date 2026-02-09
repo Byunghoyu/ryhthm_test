@@ -70,8 +70,7 @@ export default function BeatCreatorPage() {
     const [statusMessage, setStatusMessage] = useState({ text: '', type: '' });
     const [userName, setUserName] = useState('');
     const [userComment, setUserComment] = useState('');
-    const [offset, setOffset] = useState(0);
-    const [testPlaying, setTestPlaying] = useState(false);
+
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const startTimeRef = useRef(0);
@@ -140,75 +139,7 @@ export default function BeatCreatorPage() {
         }
     };
 
-    // Play beep sound (NEW)
-    const playBeep = () => {
-        try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (!AudioContext) return;
 
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            osc.type = 'sine';
-            osc.frequency.value = 1200;
-            gain.gain.value = 0.1;
-
-            osc.start();
-            osc.stop(ctx.currentTime + 0.05);
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    // Test Play (Playback with beats) (NEW)
-    const toggleTestPlay = () => {
-        if (!audioRef.current || !config) return;
-
-        if (testPlaying) {
-            // Stop
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            setTestPlaying(false);
-            if (timerRef.current) clearInterval(timerRef.current);
-            return;
-        }
-
-        // Start
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        startTimeRef.current = Date.now();
-        setTestPlaying(true);
-        nextBeatIndexRef.current = 0;
-
-        timerRef.current = setInterval(() => {
-            const currentElapsed = Date.now() - startTimeRef.current;
-            setElapsedTime(currentElapsed);
-
-            // Check for beats to play
-            while (nextBeatIndexRef.current < beatmap.length) {
-                const beatTime = beatmap[nextBeatIndexRef.current];
-                // Apply manual offset here for testing
-                // If offset is positive, we play the beat LATER (so it matches a delayed audio?)
-                // Actually usually: Visual Time = Audio Time + Offset.
-                // Here we want to hear the beat at RecordedTime + UserOffset
-                if (currentElapsed >= beatTime + offset) {
-                    playBeep();
-                    nextBeatIndexRef.current++;
-                } else {
-                    break;
-                }
-            }
-        }, 10);
-
-        audioRef.current.onended = () => {
-            setTestPlaying(false);
-            if (timerRef.current) clearInterval(timerRef.current);
-        };
-    };
 
     // Reset
     const resetBeatmap = () => {
@@ -279,7 +210,7 @@ export default function BeatCreatorPage() {
             name: userName.trim() || '익명',
             track: selectedTrack.name,
             beatCount: beatmap.length,
-            comment: `${userComment.trim()} (Offset used: ${offset}ms)`,
+            comment: `${userComment.trim()}`,
             beatmap: JSON.stringify(beatmap),
             timestamp: new Date().toISOString()
         };
@@ -322,27 +253,7 @@ export default function BeatCreatorPage() {
                     <strong>💡 Tip:</strong> <span style={{ whiteSpace: 'pre-line' }}>{config.INFO.tipText}</span>
                 </div>
 
-                {/* Offset Adjustment Tool (NEW) */}
-                <div className="section" style={{ border: '1px solid #FFD700' }}>
-                    <div className="section-title">
-                        <span>🔧 싱크 조절 (Offset Testing)</span>
-                    </div>
-                    <div style={{ marginBottom: '10px', fontSize: '14px', opacity: 0.8 }}>
-                        비트가 음악보다 늦게 들리면 (-) 값, 빨리 들리면 (+) 값으로 조절해보세요.
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input
-                            type="range"
-                            min="-500"
-                            max="500"
-                            step="10"
-                            value={offset}
-                            onChange={(e) => setOffset(Number(e.target.value))}
-                            style={{ flex: 1 }}
-                        />
-                        <span style={{ fontWeight: 'bold', width: '60px', textAlign: 'right' }}>{offset}ms</span>
-                    </div>
-                </div>
+
 
                 {/* Step 1: Music Selection */}
                 <div className="section">
@@ -380,8 +291,8 @@ export default function BeatCreatorPage() {
                         onClick={handleTap}
                         onTouchStart={handleTap}
                     >
-                        <div className="tap-icon">🎵</div>
-                        <span>{tapMessage}</span>
+                        <div className="tap-icon">👇</div>
+                        <span style={{ marginTop: '10px', display: 'block' }}>{tapMessage}</span>
                     </div>
 
                     <div className="controls">
@@ -399,14 +310,7 @@ export default function BeatCreatorPage() {
                         >
                             {config.BUTTONS.stop}
                         </button>
-                        <button
-                            className="btn"
-                            style={{ background: testPlaying ? '#FF6B6B' : '#9C27B0', color: 'white' }}
-                            onClick={toggleTestPlay}
-                            disabled={beatmap.length === 0 || isPlaying}
-                        >
-                            {testPlaying ? '⏹️ 테스트 중지' : '🎧 비트 들어보기'}
-                        </button>
+
                         <button className="btn btn-reset" onClick={resetBeatmap}>
                             {config.BUTTONS.reset}
                         </button>

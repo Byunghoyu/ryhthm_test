@@ -62,6 +62,7 @@ export default function GamePage() {
   const lastNoteAngleRef = useRef(0);
   const gameLoopRef = useRef<number | null>(null);
   const isPlayingRef = useRef(false);
+  const audioDurationRef = useRef(0);
 
   // Gameplay refs for real-time access
   const livesRef = useRef(3);
@@ -272,7 +273,11 @@ export default function GamePage() {
     });
 
     // Update progress
-    const duration = getTrackDuration(track);
+    // Use audio duration if available, otherwise fallback to beatmap calculation
+    const duration = audioDurationRef.current > 0
+      ? audioDurationRef.current
+      : getTrackDuration(track);
+
     const prog = Math.min(100, (elapsed / duration) * 100);
     setProgress(prog);
 
@@ -342,6 +347,12 @@ export default function GamePage() {
     setTimeout(() => {
       // Create and play audio
       audioRef.current = new Audio(track.src);
+      audioRef.current.addEventListener('loadedmetadata', () => {
+        if (audioRef.current) {
+          audioDurationRef.current = audioRef.current.duration * 1000;
+          console.log('Audio duration loaded:', audioDurationRef.current);
+        }
+      });
       audioRef.current.play().catch(e => console.log('Audio play failed:', e));
 
       startTimeRef.current = Date.now();
@@ -518,10 +529,7 @@ export default function GamePage() {
             {S.startButton}
           </button>
 
-          <p className="participant-count">
-            <span>{getParticipantCount().toLocaleString()}</span>
-            <span>{S.participantCount}</span>
-          </p>
+
 
         </div>
       )}

@@ -3,7 +3,7 @@
  * 게임 텍스트, 에셋, 난이도 등 수정
  */
 
-const BASE_PATH = '/ryhthm_test';
+const BASE_PATH = process.env.NODE_ENV === 'production' ? '/ryhthm_test' : '';
 const VERSION = 'v1.0.0';
 
 export const gameConfig = {
@@ -153,6 +153,10 @@ export const gameConfig = {
         soundFail: `${BASE_PATH}/assets/boo.mp3?v=${VERSION}`,
         soundSuccess: `${BASE_PATH}/assets/cheer.mp3?v=${VERSION}`,
         shaker: [
+            `${BASE_PATH}/assets/shaker1.png?v=${VERSION}`,
+            `${BASE_PATH}/assets/shaker2.png?v=${VERSION}`,
+            `${BASE_PATH}/assets/shaker3.png?v=${VERSION}`,
+            `${BASE_PATH}/assets/shaker4.png?v=${VERSION}`,
         ],
         miss: `${BASE_PATH}/assets/shaker_miss.png?v=${VERSION}`,
         ingredients: ['🥦', '🥩', '🥚', '🍌', '🥛', '🥕', '🥑', '🍗'],

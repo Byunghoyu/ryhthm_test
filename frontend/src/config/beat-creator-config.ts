@@ -3,7 +3,7 @@
  * 나만의 비트를 만들어보세요!
  */
 
-const BASE_PATH = '/ryhthm_test';
+const BASE_PATH = process.env.NODE_ENV === 'production' ? '/ryhthm_test' : '';
 const VERSION = 'v1.0.0';
 
 export const beatCreatorConfig = {

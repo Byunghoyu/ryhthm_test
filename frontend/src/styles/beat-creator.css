@@ -15,6 +15,25 @@
     /* smooth scroll on iOS */
 }
 
+/* Custom Scrollbar for Beat Creator */
+.beat-creator-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.beat-creator-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.beat-creator-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.beat-creator-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+
+}
+
 .container {
     max-width: 500px;
     margin: 0 auto;

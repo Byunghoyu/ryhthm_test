@@ -9,7 +9,7 @@ export interface Track {
 }
 
 
-const BASE_PATH = '/ryhthm_test';
+const BASE_PATH = process.env.NODE_ENV === 'production' ? '/ryhthm_test' : '';
 const VERSION = 'v1.0.0';
 
 export const TRACKS: Track[] = [
