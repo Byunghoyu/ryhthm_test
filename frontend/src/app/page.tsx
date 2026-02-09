@@ -244,7 +244,7 @@ export default function GamePage() {
     const cfg = configRef.current;
     if (!track || !cfg) return;
 
-    const mobileOffset = isMobile ? 80 : 0; // 80ms delay compensation for mobile
+    const mobileOffset = 0; // Remove forced delay
     const elapsed = Date.now() - startTimeRef.current - mobileOffset;
     elapsedTimeRef.current = elapsed;
 
