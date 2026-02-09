@@ -551,6 +551,21 @@ export default function GamePage() {
   // Their positions are updated directly in the game loop via DOM manipulation.
   const allNotes = beatNotesRef.current;
 
+  // Keyboard controls for PC
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+      if (['Space', 'Enter', 'KeyF', 'KeyJ', 'KeyD', 'KeyK'].includes(e.code)) {
+        if (screen === 'playing') {
+          handleTap();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [screen, handleTap]);
+
   return (
     <div id="app">
       {/* Title Screen */}
@@ -579,9 +594,6 @@ export default function GamePage() {
           <button className="btn btn-primary" onClick={() => setScreen('tutorial')}>
             {S.startButton}
           </button>
-
-
-
         </div>
       )}
 
@@ -677,7 +689,7 @@ export default function GamePage() {
         <div
           className="screen active"
           id="game-screen"
-          onPointerDown={(e) => { e.preventDefault(); handleTap(); }}
+          onPointerDown={handleTap}
         >
           <div className="game-header">
             <div className="rhythm-header">

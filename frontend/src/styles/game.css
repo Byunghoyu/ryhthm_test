@@ -234,46 +234,51 @@ body {
    Title Screen
    ============================================ */
 #title-screen {
-    justify-content: center;
-    padding-top: max(20px, env(safe-area-inset-top) + 10px);
-    padding-bottom: max(20px, env(safe-area-inset-bottom) + 10px);
-    gap: min(10px, 1.5vh);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    height: 100dvh;
+    padding-top: max(10px, env(safe-area-inset-top) + 10px);
+    padding-bottom: max(30px, env(safe-area-inset-bottom) + 20px);
+    gap: 10px;
     text-align: center;
+    overflow: hidden;
 }
 
 .logo-container {
+    flex: 0 0 auto;
     width: 100%;
     max-width: 400px;
-    height: auto;
-    min-height: 60px;
-    padding: 5px 0;
+    height: 48px;
+    padding: 0;
     margin: 0 auto;
     overflow: hidden;
-    background: transparent;
-    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .rolling-track {
     display: flex;
-    /* gap removed for seamless loop calculation */
     white-space: nowrap;
-    animation: marquee 20s linear infinite;
-    /* padding-left removed */
+    animation: marquee 15s linear infinite;
+    width: max-content;
+    will-change: transform;
 }
 
 .rolling-item {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--accent-dark);
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-right: 24px;
-    /* Move gap to item margin */
-    padding-right: 4px;
+    padding: 0 20px;
+    flex: 0 0 auto;
 }
 
 @keyframes marquee {
@@ -282,22 +287,26 @@ body {
     }
 
     100% {
-        /* Move exactly 50% (width of one set of items) */
         transform: translateX(-50%);
     }
 }
 
 .character-container {
-    width: 200px;
-    height: 200px;
-    max-width: 60vw;
-    max-height: 30vh;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    max-width: 300px;
     margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .character-container img {
-    width: 100%;
+    width: auto;
     height: 100%;
+    max-height: 40vh;
     object-fit: contain;
     animation: float 3s ease-in-out infinite;
 }
