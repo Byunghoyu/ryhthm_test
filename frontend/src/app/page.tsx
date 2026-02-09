@@ -48,6 +48,16 @@ export default function GamePage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [characterGlow, setCharacterGlow] = useState(false);
   const [missCharacter, setMissCharacter] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+      const mobile = Boolean(userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i));
+      setIsMobile(mobile);
+    };
+    checkMobile();
+  }, []);
 
   // Force re-render counter
   const [renderTick, setRenderTick] = useState(0);
@@ -55,6 +65,7 @@ export default function GamePage() {
   // Refs for game loop (mutable, no re-render)
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const beatNotesRef = useRef<BeatNote[]>([]);
+  const lastNoteCountRef = useRef(0);
   const beatIndexRef = useRef(0);
   const startTimeRef = useRef(0);
   const elapsedTimeRef = useRef(0);
@@ -233,7 +244,8 @@ export default function GamePage() {
     const cfg = configRef.current;
     if (!track || !cfg) return;
 
-    const elapsed = Date.now() - startTimeRef.current;
+    const mobileOffset = isMobile ? 80 : 0; // 80ms delay compensation for mobile
+    const elapsed = Date.now() - startTimeRef.current - mobileOffset;
     elapsedTimeRef.current = elapsed;
 
     const settings = getDifficultySettings();
@@ -281,14 +293,43 @@ export default function GamePage() {
     const prog = Math.min(100, (elapsed / duration) * 100);
     setProgress(prog);
 
-    // Force re-render to update note positions
-    setRenderTick(t => t + 1);
-
-    // Check game end
-    if (elapsed >= duration) {
-      endGame();
-      return;
+    // Force re-render ONLY if note count changes (spawn/destroy)
+    // This prevents React from re-rendering 60 times a second
+    if (beatNotesRef.current.length !== lastNoteCountRef.current) {
+      setRenderTick(t => t + 1);
+      lastNoteCountRef.current = beatNotesRef.current.length;
     }
+
+    // Direct DOM manipulation for smooth 60fps on mobile
+    const currentElapsed = elapsedTimeRef.current;
+    beatNotesRef.current.forEach(note => {
+      const el = document.getElementById(`note-${note.index}`);
+      if (el) {
+        const timeDiff = note.targetTime - currentElapsed;
+        const lookAhead = 1500;
+        const missWindow = cfg.TIMING.miss * settings.timingMultiplier;
+
+        // Logic for visibility
+        const isRecentlyHit = note.hit && note.hitTime && (currentElapsed - note.hitTime < 200);
+        const shouldShow = (!note.hit && timeDiff > -missWindow - 100) || isRecentlyHit;
+
+        if (shouldShow) {
+          const prog = 1 - (timeDiff / lookAhead);
+          const curX = note.startX * (1 - prog);
+          const curY = note.startY * (1 - prog);
+
+          el.style.display = 'block';
+          el.style.transform = `translate(calc(-50% + ${curX}px), calc(-50% + ${curY}px))`;
+
+          // Update hit status class if needed
+          if (note.hit && note.judgment && !el.classList.contains(note.judgment)) {
+            el.classList.add(note.judgment);
+          }
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    });
 
     gameLoopRef.current = requestAnimationFrame(runGameLoop);
   }, [createBeatNote, registerJudgment, endGame]);
@@ -326,6 +367,7 @@ export default function GamePage() {
     setLastJudgment(null);
     setProgress(0);
     setRenderTick(0);
+    lastNoteCountRef.current = 0;
   }, []);
 
   // Begin playing
@@ -499,20 +541,10 @@ export default function GamePage() {
   const settings = config.DIFFICULTY_SETTINGS[difficulty] || getDifficultySettings();
 
   // Calculate note positions for rendering (include recently hit notes for animation)
-  const elapsed = elapsedTimeRef.current;
-  const allNotes = beatNotesRef.current.map(note => {
-    const timeDiff = note.targetTime - elapsed;
-    const lookAhead = 1500;
-    const prog = 1 - (timeDiff / lookAhead);
-    const curX = note.startX * (1 - prog);
-    const curY = note.startY * (1 - prog);
-
-    // Keep hit notes visible for 200ms for animation
-    const isRecentlyHit = note.hit && note.hitTime && (elapsed - note.hitTime < 200);
-    const shouldShow = !note.hit || isRecentlyHit;
-
-    return { ...note, curX, curY, shouldShow };
-  }).filter(note => note.shouldShow);
+  // Calculate note initial positions for rendering (include recently hit notes for animation)
+  // OPTIMIZATION: We only re-render this list when notes are added/removed.
+  // Their positions are updated directly in the game loop via DOM manipulation.
+  const allNotes = beatNotesRef.current;
 
   return (
     <div id="app">
@@ -640,8 +672,7 @@ export default function GamePage() {
         <div
           className="screen active"
           id="game-screen"
-          onClick={handleTap}
-          onTouchStart={(e) => { e.preventDefault(); handleTap(); }}
+          onPointerDown={(e) => { e.preventDefault(); handleTap(); }}
         >
           <div className="game-header">
             <div className="rhythm-header">
@@ -662,9 +693,12 @@ export default function GamePage() {
               {allNotes.map(note => (
                 <div
                   key={note.index}
+                  id={`note-${note.index}`}
                   className={`beat-note ${note.judgment || ''}`}
+                  // Initial position off-screen or calculated once
                   style={{
-                    transform: `translate(calc(-50% + ${note.curX}px), calc(-50% + ${note.curY}px))`,
+                    transform: `translate(-50%, -50%)`, // script will update this
+                    display: 'none', // script will show this
                   }}
                 >
                   {note.emoji}

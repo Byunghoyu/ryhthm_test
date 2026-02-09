@@ -205,8 +205,8 @@ body {
     background: white;
     border-radius: 32px;
     padding: 32px;
+    width: 90%;
     max-width: 360px;
-    width: 100%;
     text-align: center;
     box-shadow: 0 16px 64px var(--shadow-strong);
     max-height: 90vh;
@@ -244,7 +244,9 @@ body {
 .logo-container {
     width: 100%;
     max-width: 400px;
-    height: 48px;
+    height: auto;
+    min-height: 60px;
+    padding: 5px 0;
     margin: 0 auto;
     overflow: hidden;
     background: transparent;
@@ -582,10 +584,10 @@ body {
 
 .beat-note {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    font-size: 40px;
-    line-height: 40px;
+    width: 60px;
+    height: 60px;
+    font-size: 60px;
+    line-height: 60px;
     text-align: center;
     left: 50%;
     top: 50%;
@@ -950,5 +952,20 @@ body {
     100% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .beat-note {
+        width: 70px;
+        height: 70px;
+        font-size: 70px;
+        line-height: 70px;
+    }
+
+    .hit-zone {
+        width: 140px;
+        height: 140px;
     }
 }
