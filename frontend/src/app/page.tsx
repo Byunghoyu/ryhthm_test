@@ -405,10 +405,15 @@ export default function GamePage() {
         startTimeRef.current = Date.now();
         isPlayingRef.current = true;
 
-        // Start game loop only when audio actually starts
         if (!gameLoopRef.current) {
           gameLoopRef.current = requestAnimationFrame(runGameLoop);
         }
+      });
+
+      // Game completion
+      audioRef.current.addEventListener('ended', () => {
+        console.log('Audio ended - finishing game');
+        endGame();
       });
 
       // Generate beat notes before playing

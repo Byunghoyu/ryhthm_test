@@ -234,10 +234,10 @@ body {
    Title Screen
    ============================================ */
 #title-screen {
-    justify-content: space-evenly;
-    padding-top: max(40px, env(safe-area-inset-top) + 20px);
+    justify-content: center;
+    padding-top: max(20px, env(safe-area-inset-top) + 10px);
     padding-bottom: max(20px, env(safe-area-inset-bottom) + 10px);
-    gap: min(16px, 2vh);
+    gap: min(10px, 1.5vh);
     text-align: center;
 }
 
@@ -258,10 +258,10 @@ body {
 
 .rolling-track {
     display: flex;
-    gap: 24px;
+    /* gap removed for seamless loop calculation */
     white-space: nowrap;
-    animation: marquee 25s linear infinite;
-    padding-left: 100%;
+    animation: marquee 20s linear infinite;
+    /* padding-left removed */
 }
 
 .rolling-item {
@@ -271,6 +271,9 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-right: 24px;
+    /* Move gap to item margin */
+    padding-right: 4px;
 }
 
 @keyframes marquee {
@@ -279,16 +282,17 @@ body {
     }
 
     100% {
-        transform: translateX(-200%);
+        /* Move exactly 50% (width of one set of items) */
+        transform: translateX(-50%);
     }
 }
 
 .character-container {
-    width: 320px;
-    height: 320px;
-    max-width: 85vw;
-    max-height: 45vh;
-    margin: 16px 0;
+    width: 200px;
+    height: 200px;
+    max-width: 60vw;
+    max-height: 30vh;
+    margin: 10px 0;
 }
 
 .character-container img {
@@ -584,10 +588,10 @@ body {
 
 .beat-note {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    font-size: 60px;
-    line-height: 60px;
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    line-height: 40px;
     text-align: center;
     left: 50%;
     top: 50%;
