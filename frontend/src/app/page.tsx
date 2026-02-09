@@ -345,23 +345,37 @@ export default function GamePage() {
     const startDelay = 1000;
 
     setTimeout(() => {
-      // Create and play audio
+      // Create audio instance
       audioRef.current = new Audio(track.src);
+
+      // Load duration
       audioRef.current.addEventListener('loadedmetadata', () => {
         if (audioRef.current) {
           audioDurationRef.current = audioRef.current.duration * 1000;
           console.log('Audio duration loaded:', audioDurationRef.current);
         }
       });
+
+      // SYNC FIX: Wait for 'playing' event to start game loop
+      // This ensures visuals align with actual audio start time (handling buffering)
+      audioRef.current.addEventListener('playing', () => {
+        console.log('Audio playing event received - starting game loop');
+        startTimeRef.current = Date.now();
+        isPlayingRef.current = true;
+
+        // Start game loop only when audio actually starts
+        if (!gameLoopRef.current) {
+          gameLoopRef.current = requestAnimationFrame(runGameLoop);
+        }
+      });
+
+      // Generate beat notes before playing
+      // We need to pre-generate some notes or ensure logic handles 0 elapsed time correctly
+
+      // Play audio
       audioRef.current.play().catch(e => console.log('Audio play failed:', e));
 
-      startTimeRef.current = Date.now();
-      isPlayingRef.current = true;
-
-      console.log('Game started, beatmap length:', track.beatmap.length);
-
-      // Start game loop
-      gameLoopRef.current = requestAnimationFrame(runGameLoop);
+      console.log('Game initialized, waiting for audio...');
     }, startDelay);
   }, [resetGameState, runGameLoop]);
 
