@@ -31,10 +31,10 @@ export const gameConfig = {
         },
     },
     TIMING: {
-        perfect: 50,
-        great: 100,
-        good: 150,
-        miss: 200,
+        perfect: 70,
+        great: 120,
+        good: 200,
+        miss: 300,
     },
     SCORING: {
         perfect: 100,

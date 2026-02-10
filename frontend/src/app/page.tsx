@@ -248,7 +248,8 @@ export default function GamePage() {
 
     // Simple, robust time based on system clock
     // This provides the smoothest animation and input response
-    const elapsed = Date.now() - startTimeRef.current;
+    const mobileOffset = isMobile ? 120 : 0; // 120ms delay for mobile audio latency
+    const elapsed = Date.now() - startTimeRef.current - mobileOffset;
     elapsedTimeRef.current = elapsed;
 
     const settings = getDifficultySettings();
