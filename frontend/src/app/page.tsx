@@ -74,6 +74,8 @@ export default function GamePage() {
   const gameLoopRef = useRef<number | null>(null);
   const isPlayingRef = useRef(false);
   const audioDurationRef = useRef(0);
+  const lastSyncedAudioTimeRef = useRef(0);
+  const lastSyncedRealTimeRef = useRef(0);
 
   // Gameplay refs for real-time access
   const livesRef = useRef(3);
@@ -246,16 +248,31 @@ export default function GamePage() {
 
     const mobileOffset = 0; // Remove forced delay
 
-    // Use audio currentTime for precise sync if available
+    // Smooth Sync Logic:
+    // Audio currentTime updates infrequently (e.g. every 200ms).
+    // To prevent "stuttery" time which causes input misses, we interpolate.
+    // Base time is audio.currentTime, but we add (Date.now() - lastAudioUpdate) to smooth it out.
     let elapsed = 0;
+    const now = Date.now();
+
     if (audioRef.current && !audioRef.current.paused) {
-      elapsed = audioRef.current.currentTime * 1000;
-      // Fallback for initial frames if currentTime is 0 but we started
-      if (elapsed === 0 && startTimeRef.current > 0) {
-        elapsed = Date.now() - startTimeRef.current;
+      const audioTime = audioRef.current.currentTime * 1000;
+
+      // If audio time advanced significantly (new update from browser)
+      // or if we drifted too far (resync), update the anchor point.
+      if (Math.abs(audioTime - lastSyncedAudioTimeRef.current) > 50 ||
+        Math.abs((lastSyncedAudioTimeRef.current + (now - lastSyncedRealTimeRef.current)) - audioTime) > 100) {
+        lastSyncedAudioTimeRef.current = audioTime;
+        lastSyncedRealTimeRef.current = now;
       }
+
+      // Calculate smooth elapsed time
+      elapsed = lastSyncedAudioTimeRef.current + (now - lastSyncedRealTimeRef.current);
+
+      // Fallback for start
+      if (elapsed < 0) elapsed = 0;
     } else {
-      elapsed = Date.now() - startTimeRef.current;
+      elapsed = now - startTimeRef.current;
     }
 
     elapsedTimeRef.current = elapsed;
