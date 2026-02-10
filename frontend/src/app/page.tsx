@@ -246,10 +246,33 @@ export default function GamePage() {
     const cfg = configRef.current;
     if (!track || !cfg) return;
 
-    // Simple, robust time based on system clock
-    // This provides the smoothest animation and input response
-    const mobileOffset = isMobile ? 120 : 0; // 120ms delay for mobile audio latency
-    const elapsed = Date.now() - startTimeRef.current - mobileOffset;
+    // Audio Interpolation Sync Logic:
+    // This ties the game clock to the audio clock but smooths out the low update rate of currentTime.
+    // It provides automatic latency handling (video waits for audio) and smooth animation.
+    let elapsed = 0;
+    const now = Date.now();
+
+    if (audioRef.current && !audioRef.current.paused) {
+      const audioTime = audioRef.current.currentTime * 1000;
+
+      // If audio time advanced (new frame from browser audio engine)
+      // or if we drifted too far (resync needed), update the anchor point.
+      // Threshold 50ms is roughly 3 frames, handling jitter.
+      if (Math.abs(audioTime - lastSyncedAudioTimeRef.current) > 50 ||
+        Math.abs((lastSyncedAudioTimeRef.current + (now - lastSyncedRealTimeRef.current)) - audioTime) > 100) {
+        lastSyncedAudioTimeRef.current = audioTime;
+        lastSyncedRealTimeRef.current = now;
+      }
+
+      // Calculate smooth elapsed time based on the last audio updates
+      elapsed = lastSyncedAudioTimeRef.current + (now - lastSyncedRealTimeRef.current);
+    } else {
+      // Fallback if audio hasn't started or is paused
+      elapsed = now - startTimeRef.current;
+    }
+
+    // Ensure time doesn't go backwards significantly
+    if (elapsed < 0) elapsed = 0;
     elapsedTimeRef.current = elapsed;
 
     const settings = getDifficultySettings();
