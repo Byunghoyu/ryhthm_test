@@ -66,7 +66,7 @@ body {
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
+    touch-action: none;
 }
 
 #app {
@@ -824,20 +824,20 @@ body {
 @media (max-width: 768px) {
 
     /* Rhythm Game Elements */
+    /* Rhythm Game Elements */
     .beat-note {
-        width: 30px;
-        height: 30px;
+        width: min(36px, 9vw);
+        height: min(36px, 9vw);
     }
 
     .note-content {
-        font-size: 24px !important;
-        transform: scale(0.8);
-        /* Force scale down if font-size fails */
+        font-size: min(32px, 8vw) !important;
+        transform: none;
     }
 
     .hit-zone {
-        width: 90px;
-        height: 90px;
+        width: min(100px, 25vw);
+        height: min(100px, 25vw);
         border-width: 3px;
     }
 
