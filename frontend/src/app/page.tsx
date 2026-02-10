@@ -245,7 +245,19 @@ export default function GamePage() {
     if (!track || !cfg) return;
 
     const mobileOffset = 0; // Remove forced delay
-    const elapsed = Date.now() - startTimeRef.current - mobileOffset;
+
+    // Use audio currentTime for precise sync if available
+    let elapsed = 0;
+    if (audioRef.current && !audioRef.current.paused) {
+      elapsed = audioRef.current.currentTime * 1000;
+      // Fallback for initial frames if currentTime is 0 but we started
+      if (elapsed === 0 && startTimeRef.current > 0) {
+        elapsed = Date.now() - startTimeRef.current;
+      }
+    } else {
+      elapsed = Date.now() - startTimeRef.current;
+    }
+
     elapsedTimeRef.current = elapsed;
 
     const settings = getDifficultySettings();
@@ -689,7 +701,7 @@ export default function GamePage() {
         <div
           className="screen active"
           id="game-screen"
-          onPointerDown={handleTap}
+          onPointerDown={(e) => { e.preventDefault(); handleTap(); }}
         >
           <div className="game-header">
             <div className="rhythm-header">
@@ -718,7 +730,7 @@ export default function GamePage() {
                     display: 'none', // script will show this
                   }}
                 >
-                  {note.emoji}
+                  <span className="note-content">{note.emoji}</span>
                 </div>
               ))}
             </div>

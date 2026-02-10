@@ -599,13 +599,20 @@ body {
     position: absolute;
     width: 40px;
     height: 40px;
-    font-size: 40px;
-    line-height: 40px;
-    text-align: center;
+    /* font-size moved to inner span */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     left: 50%;
     top: 50%;
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
     z-index: 20;
+}
+
+.note-content {
+    font-size: 40px;
+    line-height: 1;
+    display: block;
 }
 
 .hit-zone {
@@ -818,10 +825,14 @@ body {
 
     /* Rhythm Game Elements */
     .beat-note {
-        width: 24px;
-        height: 24px;
-        font-size: 24px;
-        line-height: 24px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .note-content {
+        font-size: 24px !important;
+        transform: scale(0.8);
+        /* Force scale down if font-size fails */
     }
 
     .hit-zone {
